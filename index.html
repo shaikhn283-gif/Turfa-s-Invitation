@@ -11,14 +11,14 @@ body{font-family:'Playfair Display',serif;background:#111;overflow:hidden;-webki
 #frame{position:fixed;top:0;bottom:0;left:0;right:0;margin:auto;width:100%;max-width:414px;background:#000;overflow:hidden}
 
 /* ========== PURSE OPENING SCREEN ========== */
-#purse{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#FDF2F4 0%,#F8E1E7 60%,#F0CCD5 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:50;cursor:pointer;transition:opacity 0.9s ease 2.4s}
+#purse{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#FDF2F4 0%,#F8E1E7 60%,#F0CCD5 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:50;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:opacity 0.9s ease 2.4s}
 #purse.hide{opacity:0;pointer-events:none}
 
 #purse:before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(183,110,121,0.06) 0,transparent 40%),radial-gradient(circle at 80% 70%,rgba(183,110,121,0.05) 0,transparent 35%);pointer-events:none}
 
 .purse-top-text{font-family:'Great Vibes',cursive;font-size:26px;color:#B76E79;margin-bottom:28px;position:relative;z-index:2;text-shadow:0 1px 2px rgba(183,110,121,0.15)}
 
-.purse-wrap{position:relative;width:340px;height:280px;perspective:900px}
+.purse-wrap{position:relative;width:340px;height:280px;perspective:900px;pointer-events:none}
 
 .env-card{position:absolute;bottom:60px;left:50%;transform:translateX(-50%) translateY(0);width:240px;height:150px;background:linear-gradient(160deg,#FFFCF9,#FDF2F4);border-radius:6px;box-shadow:0 6px 18px rgba(139,58,74,0.25);z-index:1;transition:transform 1.2s cubic-bezier(0.4,0,0.2,1) 1s}
 #purse.open .env-card{transform:translateX(-50%) translateY(-180px)}
@@ -121,7 +121,6 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 
 .footer{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#B76E79;text-align:center;margin-top:26px;opacity:0.7}
 
-/* Back link at bottom of page 2 */
 .back-link{display:inline-block;margin-top:22px;padding:10px 24px;background:transparent;border:1px solid rgba(183,110,121,0.5);color:#B76E79;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;border-radius:24px;cursor:pointer;text-decoration:none;transition:all 0.25s ease}
 .back-link:active{background:rgba(183,110,121,0.1)}
 </style>
@@ -130,7 +129,7 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 
 <div id="frame">
 
-  <div id="purse" onclick="openPurse()">
+  <div id="purse" onclick="openPurse(event)">
     <div class="purse-top-text">A little something from Turfa</div>
     <div class="purse-wrap">
       <div class="env-card">
@@ -253,9 +252,11 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 </div>
 
 <script>
-function openPurse() {
+// ==== BULLETPROOF PURSE OPENER ====
+function openPurse(e) {
+  if (e && e.cancelable) e.preventDefault();
   var purse = document.getElementById('purse');
-  if (purse.classList.contains('open')) return;
+  if (!purse || purse.classList.contains('open')) return;
   purse.classList.add('hide');
   purse.classList.add('open');
   setTimeout(function() {
@@ -263,6 +264,19 @@ function openPurse() {
   }, 3400);
 }
 
+// Attach multiple listeners as backup — belt & suspenders
+document.addEventListener('DOMContentLoaded', function() {
+  var purse = document.getElementById('purse');
+  if (!purse) return;
+  purse.addEventListener('click', openPurse);
+  purse.addEventListener('touchend', function(e) {
+    if (e.cancelable) e.preventDefault();
+    openPurse();
+  }, { passive: false });
+  purse.addEventListener('pointerup', openPurse);
+});
+
+// ==== QUIZ ====
 function checkAnswer(btn, isCorrect) {
   document.querySelectorAll('.quiz-btn').forEach(function(b) {
     b.classList.remove('correct', 'wrong');
@@ -290,8 +304,7 @@ function goToPage2() {
     try {
       page2.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (e) {
-      var container = document.getElementById('pages');
-      container.scrollTop = page2.offsetTop;
+      document.getElementById('pages').scrollTop = page2.offsetTop;
     }
   }, 50);
 }
@@ -305,6 +318,7 @@ function goToPage1() {
   }
 }
 
+// ==== COUNTDOWN ====
 try {
   var target = new Date(2026, 10, 16, 11, 0, 0).getTime();
   function updateCountdown() {
@@ -323,6 +337,7 @@ try {
   setInterval(updateCountdown, 1000);
 } catch(e) {}
 
+// ==== SCRATCH ====
 try {
   var canvas = document.getElementById('scratchPad');
   var ctx = canvas.getContext('2d');
@@ -331,4 +346,111 @@ try {
   canvas.height = 180;
 
   function drawKiss() {
-    var bg = ctx.c
+    var bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bg.addColorStop(0, '#FDECF0');
+    bg.addColorStop(0.5, '#F8E1E7');
+    bg.addColorStop(1, '#F0CCD5');
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.strokeStyle = 'rgba(212,165,116,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(6, 6, canvas.width - 12, canvas.height - 12);
+
+    var shadowGrad = ctx.createRadialGradient(125, 95, 20, 125, 95, 110);
+    shadowGrad.addColorStop(0, 'rgba(139,58,74,0.25)');
+    shadowGrad.addColorStop(1, 'rgba(139,58,74,0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.beginPath();
+    ctx.ellipse(125, 95, 100, 70, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    var grad = ctx.createRadialGradient(125, 85, 10, 125, 95, 110);
+    grad.addColorStop(0, '#E8B4BA');
+    grad.addColorStop(0.4, '#C97A85');
+    grad.addColorStop(0.8, '#A2505C');
+    grad.addColorStop(1, '#8B3A4A');
+    ctx.fillStyle = grad;
+
+    ctx.beginPath();
+    ctx.moveTo(38, 88);
+    ctx.bezierCurveTo(55, 55, 85, 58, 105, 78);
+    ctx.bezierCurveTo(115, 85, 122, 86, 125, 86);
+    ctx.bezierCurveTo(128, 86, 135, 85, 145, 78);
+    ctx.bezierCurveTo(165, 58, 195, 55, 212, 88);
+    ctx.bezierCurveTo(190, 96, 160, 96, 125, 96);
+    ctx.bezierCurveTo(90, 96, 60, 96, 38, 88);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(38, 88);
+    ctx.bezierCurveTo(55, 130, 90, 140, 125, 140);
+    ctx.bezierCurveTo(160, 140, 195, 130, 212, 88);
+    ctx.bezierCurveTo(195, 100, 165, 104, 125, 104);
+    ctx.bezierCurveTo(85, 104, 55, 100, 38, 88);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(80,30,40,0.25)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(40, 89);
+    ctx.quadraticCurveTo(85, 100, 125, 100);
+    ctx.quadraticCurveTo(165, 100, 210, 89);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(95, 118, 22, 8, -0.3, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  drawKiss();
+
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.lineWidth = 40;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  var drawing = false;
+  var tracker = 0;
+  var revealed = false;
+
+  function getPos(e) {
+    var rect = canvas.getBoundingClientRect();
+    var x = e.touches ? e.touches[0].clientX : e.clientX;
+    var y = e.touches ? e.touches[0].clientY : e.clientY;
+    return { x: x - rect.left, y: y - rect.top };
+  }
+  function start(e) { drawing = true; scratch(e); }
+  function end() { drawing = false; ctx.beginPath(); }
+  function scratch(e) {
+    if (!drawing) return;
+    if (e.cancelable) e.preventDefault();
+    var pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+
+    if (!revealed) {
+      tracker++;
+      if (tracker > 35) {
+        hidden.classList.add('revealed');
+        revealed = true;
+      }
+    }
+  }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('mouseleave', end);
+  canvas.addEventListener('touchstart', start, { passive: false });
+  canvas.addEventListener('touchmove', scratch, { passive: false });
+  canvas.addEventListener('touchend', end);
+} catch(e) {}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Turfa's Wedding | Her Girls</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:wght@500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Playfair Display',serif;background:#111;overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+#frame{position:fixed;top:0;bottom:0;left:0;right:0;margin:auto;width:100%;max-width:414px;background:#000;overflow:hidden}
+
+/* ========== PURSE OPENING SCREEN ========== */
+#purse{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(160deg,#FDF2F4 0%,#F8E1E7 60%,#F0CCD5 100%);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:50;cursor:pointer;transition:opacity 0.9s ease 2.4s}
+#purse.hide{opacity:0;pointer-events:none}
+
+#purse:before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(183,110,121,0.06) 0,transparent 40%),radial-gradient(circle at 80% 70%,rgba(183,110,121,0.05) 0,transparent 35%);pointer-events:none}
+
+.purse-top-text{font-family:'Great Vibes',cursive;font-size:26px;color:#B76E79;margin-bottom:28px;position:relative;z-index:2;text-shadow:0 1px 2px rgba(183,110,121,0.15)}
+
+.purse-wrap{position:relative;width:340px;height:280px;perspective:900px}
+
+.env-card{position:absolute;bottom:60px;left:50%;transform:translateX(-50%) translateY(0);width:240px;height:150px;background:linear-gradient(160deg,#FFFCF9,#FDF2F4);border-radius:6px;box-shadow:0 6px 18px rgba(139,58,74,0.25);z-index:1;transition:transform 1.2s cubic-bezier(0.4,0,0.2,1) 1s}
+#purse.open .env-card{transform:translateX(-50%) translateY(-180px)}
+.env-card-inner{position:absolute;inset:6px;border:1px solid rgba(212,165,116,0.5);border-radius:4px}
+.env-card-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Great Vibes',cursive;font-size:26px;color:#B76E79;white-space:nowrap}
+
+.purse-body{position:absolute;bottom:0;left:20px;width:300px;height:160px;border-radius:0 0 24px 24px;background:radial-gradient(circle at 30px 30px,rgba(255,255,255,0.15) 3px,transparent 4px) 0 0/40px 40px,linear-gradient(160deg,#CE8E98,#B76E79 50%,#8B3A4A);box-shadow:0 12px 30px rgba(139,58,74,0.35),inset 0 2px 6px rgba(255,255,255,0.2);z-index:2}
+.purse-body:after{content:'';position:absolute;inset:6px;border-radius:0 0 20px 20px;border:1px solid rgba(255,255,255,0.25);pointer-events:none}
+
+.purse-lid{position:absolute;top:40px;left:20px;width:300px;height:100px;border-radius:150px 150px 0 0;background:radial-gradient(circle at 30px 30px,rgba(255,255,255,0.15) 3px,transparent 4px) 0 0/40px 40px,linear-gradient(160deg,#D89BA4,#C2828D 50%,#A25C68);box-shadow:0 8px 20px rgba(139,58,74,0.3),inset 0 2px 6px rgba(255,255,255,0.25);transform-origin:top center;z-index:3;transition:transform 1.3s cubic-bezier(0.4,0,0.2,1) 0.3s,opacity 0.7s ease 1.3s}
+.purse-lid:after{content:'';position:absolute;inset:6px;border-radius:140px 140px 0 0;border:1px solid rgba(255,255,255,0.3);pointer-events:none}
+#purse.open .purse-lid{transform:rotateX(-155deg);opacity:0}
+
+.clasp{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#F5E0B0,#D4A574 40%,#A67649 100%);box-shadow:0 4px 12px rgba(139,58,74,0.5),inset 0 -2px 4px rgba(0,0,0,0.2);display:flex;justify-content:center;align-items:center;color:#7A4532;font-family:'Cinzel Decorative',serif;font-size:16px;font-weight:700;animation:claspPulse 2s infinite}
+.clasp:after{content:'';position:absolute;width:38px;height:38px;border-radius:50%;border:1px dotted rgba(255,255,255,0.55)}
+@keyframes claspPulse{0%,100%{box-shadow:0 4px 12px rgba(139,58,74,0.5),0 0 0 0 rgba(212,165,116,0.6)}50%{box-shadow:0 4px 12px rgba(139,58,74,0.5),0 0 0 14px rgba(212,165,116,0)}}
+
+.heart{position:absolute;bottom:70px;font-size:22px;opacity:0;pointer-events:none;z-index:4;color:#B76E79;filter:drop-shadow(0 2px 4px rgba(183,110,121,0.4))}
+#purse.open .heart{animation:floatUp 2s ease-out 1.5s forwards}
+.heart:nth-child(1){left:25%}
+.heart:nth-child(2){left:40%;animation-delay:1.7s}
+.heart:nth-child(3){left:55%;animation-delay:1.6s}
+.heart:nth-child(4){left:68%;animation-delay:1.9s}
+.heart:nth-child(5){left:33%;animation-delay:2.1s}
+.heart:nth-child(6){left:60%;animation-delay:2s}
+@keyframes floatUp{0%{opacity:0;transform:translateY(0) scale(0.4)}25%{opacity:1}100%{opacity:0;transform:translateY(-220px) scale(1.2)}}
+
+.purse-bottom-text{font-family:'Cormorant Garamond',serif;font-size:12px;letter-spacing:4px;color:#B76E79;margin-top:36px;position:relative;z-index:2;text-transform:uppercase;font-weight:600}
+
+/* ========== MAIN CONTENT ========== */
+#pages{position:absolute;top:0;left:0;width:100%;height:100%;background:#FDF2F4;z-index:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page{min-height:100%;width:100%;padding:16px}
+#page2{display:none}
+.card{position:relative;background:linear-gradient(180deg,#FFFCF9,#FDF2F4);border-radius:14px;padding:38px 22px 60px;text-align:center;min-height:100%;box-shadow:inset 0 0 40px rgba(183,110,121,0.08)}
+.border{position:absolute;top:14px;bottom:14px;left:14px;right:14px;border:1px solid rgba(212,165,116,0.55);border-radius:8px;pointer-events:none}
+.border:before{content:'';position:absolute;inset:6px;border:1px solid rgba(212,165,116,0.3);border-radius:6px}
+
+.divider{display:flex;align-items:center;justify-content:center;margin:22px 0}
+.divider:before,.divider:after{content:'';height:1px;width:30%;background:linear-gradient(to right,transparent,#D4A574,transparent)}
+.divider span{color:#B76E79;margin:0 14px;font-size:14px}
+
+.hero-name{font-family:'Great Vibes',cursive;font-size:76px;color:#B76E79;line-height:1.05;position:relative;margin:8px 0}
+.hero-name .sparkle{font-size:22px;color:#D4A574;vertical-align:middle;margin:0 10px;opacity:0.85}
+.hero-groom{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#8B3A4A;margin-top:2px;letter-spacing:0.5px}
+.hero-groom strong{font-style:normal;font-weight:600;color:#8B3A4A}
+.hero-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#4A2C34;line-height:1.6;margin-top:12px}
+.hero-sub strong{color:#8B3A4A;font-style:normal;font-weight:600}
+
+.note-box{margin:26px 0 22px;padding:22px 20px;background:linear-gradient(180deg,#FDECF0,#FBE3E9);border:1px solid rgba(212,165,116,0.5);border-radius:12px;position:relative}
+.note-box:before{content:'❝';position:absolute;top:6px;left:14px;font-family:'Great Vibes',cursive;font-size:32px;color:rgba(183,110,121,0.4)}
+.note-text{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#4A2C34;line-height:1.7;padding:0 8px}
+.note-sig{font-family:'Great Vibes',cursive;font-size:22px;color:#8B3A4A;margin-top:12px;text-align:right;padding-right:6px}
+
+.quiz{margin-top:26px;padding:22px 20px;background:rgba(255,255,255,0.85);border:2px solid #D4A574;border-radius:14px;box-shadow:0 4px 14px rgba(183,110,121,0.1)}
+.quiz-head{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#8B3A4A;margin-bottom:10px;line-height:1.4}
+.quiz-q{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#4A2C34;margin-bottom:16px;line-height:1.55}
+.quiz-btn{display:block;width:100%;padding:13px 14px;margin-bottom:10px;background:#FFFCF9;border:1px solid rgba(212,165,116,0.7);color:#4A2C34;font-family:'Playfair Display',serif;font-size:15px;font-weight:500;border-radius:8px;cursor:pointer;text-align:left;transition:all 0.25s ease;touch-action:manipulation}
+.quiz-btn:active{transform:scale(0.985)}
+.quiz-btn.correct{background:linear-gradient(135deg,#B76E79,#8B3A4A);color:#FFFCF9;border-color:#8B3A4A}
+.quiz-btn.wrong{background:#FBE3E9;color:#8B3A4A;border-color:#B76E79}
+#feedback{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:#4A2C34;margin-top:12px;min-height:22px;line-height:1.5}
+
+#continueBtn{display:none;margin:20px auto 0;padding:13px 32px;background:linear-gradient(135deg,#B76E79,#8B3A4A);color:#FFFCF9;border:none;border-radius:30px;font-family:'Playfair Display',serif;font-size:14px;font-weight:600;letter-spacing:0.5px;cursor:pointer;box-shadow:0 6px 16px rgba(139,58,74,0.3);touch-action:manipulation}
+#continueBtn.show{display:block}
+
+.dresscode{margin-top:20px;display:inline-flex;align-items:center;gap:10px;padding:9px 20px;background:linear-gradient(135deg,#FDECF0,#FBE3E9);border:1px solid rgba(212,165,116,0.6);border-radius:30px;box-shadow:0 2px 8px rgba(183,110,121,0.1)}
+.dc-label{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:3px;color:#8B3A4A;font-weight:600}
+.dc-sep{color:#D4A574;font-size:11px}
+.dc-text{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:#4A2C34}
+
+/* ========== PAGE 2 ========== */
+.page-title{font-family:'Great Vibes',cursive;font-size:54px;color:#B76E79;line-height:1.1;margin:6px 0}
+
+.events{margin:8px 0 4px;display:flex;flex-direction:column;gap:14px}
+.event{padding:18px 18px 20px;background:linear-gradient(180deg,#FDECF0,#FBE3E9);border:1px solid rgba(212,165,116,0.5);border-radius:12px;position:relative}
+.event-label{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#8B3A4A;font-weight:600;margin-bottom:4px}
+.event-name{font-family:'Great Vibes',cursive;font-size:34px;color:#B76E79;line-height:1.1;margin-bottom:6px}
+.event-date{font-family:'Playfair Display',serif;font-size:17px;color:#4A2C34;font-weight:600;margin-bottom:4px}
+.event-venue{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:#6B4A52;line-height:1.5}
+
+.scratch-section{margin-top:24px;display:flex;flex-direction:column;align-items:center}
+.scratch-title{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#8B3A4A;font-weight:600;margin-bottom:16px;text-align:center;line-height:1.5}
+.scratch-wrap{position:relative;width:250px;height:180px}
+.secret-reveal{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8px;text-align:center}
+.secret-line{font-family:'Great Vibes',cursive;font-size:26px;color:#8B3A4A;line-height:1.2;margin-bottom:6px}
+.secret-sub{font-family:'Playfair Display',serif;font-style:italic;font-size:13px;color:#6B4A52;line-height:1.4}
+canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crosshair}
+
+.hidden{opacity:0;visibility:hidden;max-height:0;overflow:hidden;transition:opacity 1.3s ease,max-height 1.3s ease,visibility 0s 1.3s;width:100%;margin-top:22px;display:flex;flex-direction:column;align-items:center}
+.hidden.revealed{opacity:1;visibility:visible;max-height:800px;transition:opacity 1.3s ease,max-height 1.3s ease,visibility 0s}
+
+.countdown-title{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:4px;color:#8B3A4A;font-weight:600;margin-bottom:12px;text-transform:uppercase}
+.countdown{display:flex;gap:10px;margin-bottom:22px}
+.time-box{display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,#FDECF0,#FBE3E9);border:1px solid rgba(212,165,116,0.6);padding:10px 14px;border-radius:10px;min-width:58px}
+.time-box span{font-family:'Playfair Display',serif;font-size:22px;color:#8B3A4A;font-weight:700;line-height:1}
+.time-box p{font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:2px;color:#B76E79;text-transform:uppercase;margin-top:4px;font-weight:600}
+
+.closing-line{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#4A2C34;line-height:1.6;text-align:center;padding:0 12px}
+.closing-sign{font-family:'Great Vibes',cursive;font-size:26px;color:#B76E79;margin-top:8px}
+
+.footer{font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:2px;color:#B76E79;text-align:center;margin-top:26px;opacity:0.7}
+
+/* Back link at bottom of page 2 */
+.back-link{display:inline-block;margin-top:22px;padding:10px 24px;background:transparent;border:1px solid rgba(183,110,121,0.5);color:#B76E79;font-family:'Playfair Display',serif;font-style:italic;font-size:13px;border-radius:24px;cursor:pointer;text-decoration:none;transition:all 0.25s ease}
+.back-link:active{background:rgba(183,110,121,0.1)}
+</style>
+</head>
+<body>
+
+<div id="frame">
+
+  <div id="purse" onclick="openPurse()">
+    <div class="purse-top-text">A little something from Turfa</div>
+    <div class="purse-wrap">
+      <div class="env-card">
+        <div class="env-card-inner"></div>
+        <div class="env-card-text">For You 🤍</div>
+      </div>
+      <div class="purse-body"></div>
+      <div class="purse-lid">
+        <div class="clasp">T</div>
+      </div>
+      <div class="heart">🤍</div>
+      <div class="heart">🤍</div>
+      <div class="heart">🤍</div>
+      <div class="heart">🤍</div>
+      <div class="heart">🤍</div>
+      <div class="heart">🤍</div>
+    </div>
+    <div class="purse-bottom-text">Tap to Open</div>
+  </div>
+
+  <div id="pages">
+
+    <div class="page" id="page1">
+      <div class="card">
+        <div class="border"></div>
+
+        <div class="divider"><span>✦</span></div>
+
+        <div class="hero-name">
+          <span class="sparkle">✦</span>Turfa<span class="sparkle">✦</span>
+        </div>
+        <div class="hero-groom">with her groom, <strong>Nawaz</strong></div>
+        <div class="hero-sub">invites her <strong>girls</strong> to celebrate<br>their wedding</div>
+
+        <div class="divider"><span>✦</span></div>
+
+        <div class="note-box">
+          <div class="note-text">
+            You've been with me through every chapter.<br>
+            Now I need you at the start of my forever. 🤍
+          </div>
+          <div class="note-sig">— With love, Turfa</div>
+        </div>
+
+        <div class="divider"><span>✦</span></div>
+
+        <div class="quiz">
+          <div class="quiz-head">🔒 A tiny friendship check before you unlock</div>
+          <div class="quiz-q">What's the one thing a bride's best friend never forgets to bring?</div>
+          <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">The perfect outfit ✨</button>
+          <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">Tissues for happy tears 🥲</button>
+          <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">Snacks for the bride 🍫</button>
+          <button class="quiz-btn" data-correct="true" onclick="checkAnswer(this,true)">All of the above (and backup lipstick) 💄</button>
+          <div id="feedback"></div>
+          <button id="continueBtn" onclick="goToPage2()">See the Celebrations →</button>
+        </div>
+
+        <div class="dresscode">
+          <span class="dc-label">DRESS CODE</span>
+          <span class="dc-sep">✦</span>
+          <span class="dc-text">Dressed in your best, ready to celebrate</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="page" id="page2">
+      <div class="card">
+        <div class="border"></div>
+        <br>
+        <div class="page-title">The Celebrations</div>
+        <div class="divider"><span>✦</span></div>
+
+        <div class="events">
+          <div class="event">
+            <div class="event-label">DAY ONE</div>
+            <div class="event-name">Haldi</div>
+            <div class="event-date">15 November 2026</div>
+            <div class="event-venue">Power House Faliya, Nr SBI Bank,<br>Chhota Udepur, Gujarat</div>
+          </div>
+          <div class="event">
+            <div class="event-label">DAY TWO</div>
+            <div class="event-name">Nikah</div>
+            <div class="event-date">16 November 2026</div>
+            <div class="event-venue">11:00 in the morning<br>Power House Faliya, Nr SBI Bank,<br>Chhota Udepur, Gujarat</div>
+          </div>
+        </div>
+
+        <div class="divider"><span>✦</span></div>
+
+        <div class="scratch-section">
+          <div class="scratch-title">Scratch the kiss for a little something 🤍</div>
+          <div class="scratch-wrap" id="scratchWrap">
+            <div class="secret-reveal">
+              <div class="secret-line">Two days,</div>
+              <div class="secret-sub">one unforgettable beginning.<br>Can't wait to have you there.</div>
+            </div>
+            <canvas id="scratchPad"></canvas>
+          </div>
+
+          <div class="hidden" id="hiddenElements">
+            <div class="countdown-title">Time Until My Nikah</div>
+            <div class="countdown">
+              <div class="time-box"><span id="cdDays">00</span><p>Days</p></div>
+              <div class="time-box"><span id="cdHours">00</span><p>Hrs</p></div>
+              <div class="time-box"><span id="cdMins">00</span><p>Mins</p></div>
+            </div>
+            <div class="closing-line">You're not just a guest — you're part of my story.</div>
+            <div class="closing-sign">— Turfa</div>
+          </div>
+        </div>
+
+        <div class="footer">Made with 🤍 for Turfa's girls</div>
+
+        <button class="back-link" onclick="goToPage1()">← Back to the beginning</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function openPurse() {
+  var purse = document.getElementById('purse');
+  if (purse.classList.contains('open')) return;
+  purse.classList.add('hide');
+  purse.classList.add('open');
+  setTimeout(function() {
+    purse.style.display = 'none';
+  }, 3400);
+}
+
+function checkAnswer(btn, isCorrect) {
+  document.querySelectorAll('.quiz-btn').forEach(function(b) {
+    b.classList.remove('correct', 'wrong');
+  });
+  var feedback = document.getElementById('feedback');
+  var continueBtn = document.getElementById('continueBtn');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    feedback.innerHTML = "Yes! You know me too well. 🥲🤍<br>Come see the details, my love.";
+    feedback.style.color = "#8B3A4A";
+    continueBtn.classList.add('show');
+  } else {
+    btn.classList.add('wrong');
+    feedback.innerHTML = "Close! But think about what happens when I see you at the wedding... 🥲 Try again, my girl.";
+    feedback.style.color = "#B76E79";
+    continueBtn.classList.remove('show');
+  }
+}
+
+function goToPage2() {
+  var page2 = document.getElementById('page2');
+  page2.style.display = 'block';
+  setTimeout(function() {
+    try {
+      page2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (e) {
+      var container = document.getElementById('pages');
+      container.scrollTop = page2.offsetTop;
+    }
+  }, 50);
+}
+
+function goToPage1() {
+  var page1 = document.getElementById('page1');
+  try {
+    page1.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (e) {
+    document.getElementById('pages').scrollTop = 0;
+  }
+}
+
+try {
+  var target = new Date(2026, 10, 16, 11, 0, 0).getTime();
+  function updateCountdown() {
+    var now = new Date().getTime();
+    var distance = target - now;
+    if (distance > 0) {
+      var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var mins = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      document.getElementById("cdDays").innerText = days < 10 ? "0" + days : days;
+      document.getElementById("cdHours").innerText = hours < 10 ? "0" + hours : hours;
+      document.getElementById("cdMins").innerText = mins < 10 ? "0" + mins : mins;
+    }
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+} catch(e) {}
+
+try {
+  var canvas = document.getElementById('scratchPad');
+  var ctx = canvas.getContext('2d');
+  var hidden = document.getElementById('hiddenElements');
+  canvas.width = 250;
+  canvas.height = 180;
+
+  function drawKiss() {
+    var bg = ctx.c

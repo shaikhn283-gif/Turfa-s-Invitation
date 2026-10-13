@@ -72,14 +72,88 @@ body{font-family:'Playfair Display',serif;background:#111;overflow:hidden;-webki
 .note-text{font-family:'Playfair Display',serif;font-style:italic;font-size:16px;color:#4A2C34;line-height:1.7;padding:0 8px}
 .note-sig{font-family:'Great Vibes',cursive;font-size:22px;color:#8B3A4A;margin-top:12px;text-align:right;padding-right:6px}
 
-.quiz{margin-top:26px;padding:22px 20px;background:rgba(255,255,255,0.85);border:2px solid #D4A574;border-radius:14px;box-shadow:0 4px 14px rgba(183,110,121,0.1)}
-.quiz-head{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#8B3A4A;margin-bottom:10px;line-height:1.4}
-.quiz-q{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:#4A2C34;margin-bottom:16px;line-height:1.55}
+/* ===== HIGHLIGHTED QUIZ ===== */
+.quiz-hint-arrow{
+  font-size: 28px;
+  color: #B76E79;
+  text-align: center;
+  margin: 24px 0 -4px 0;
+  animation: bounceDown 1.6s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+@keyframes bounceDown{
+  0%,100%{transform:translateY(0);opacity:0.75}
+  50%{transform:translateY(8px);opacity:1}
+}
+
+.quiz-unlock-banner{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:13px;
+  color:#8B3A4A;
+  text-align:center;
+  letter-spacing:1px;
+  margin-bottom:10px;
+  position:relative;
+  z-index:2;
+}
+
+.quiz{
+  margin-top:6px;
+  padding:24px 20px 22px;
+  background:linear-gradient(180deg,#FFF8FA,#FBE3E9);
+  border:2px solid #D4A574;
+  border-radius:14px;
+  box-shadow:0 6px 20px rgba(183,110,121,0.18), 0 0 0 0 rgba(212,165,116,0.5);
+  position:relative;
+  animation: quizGlow 2.4s ease-in-out infinite;
+}
+@keyframes quizGlow{
+  0%,100%{box-shadow:0 6px 20px rgba(183,110,121,0.18),0 0 0 0 rgba(212,165,116,0.55)}
+  50%{box-shadow:0 6px 22px rgba(183,110,121,0.25),0 0 0 10px rgba(212,165,116,0)}
+}
+
+.quiz-head{
+  font-family:'Playfair Display',serif;
+  font-size:17px;
+  font-weight:700;
+  color:#8B3A4A;
+  margin-bottom:6px;
+  line-height:1.4;
+}
+.quiz-subhead{
+  font-family:'Cormorant Garamond',serif;
+  font-size:11px;
+  letter-spacing:3px;
+  color:#B76E79;
+  text-transform:uppercase;
+  font-weight:600;
+  margin-bottom:12px;
+}
+.quiz-q{
+  font-family:'Playfair Display',serif;
+  font-style:italic;
+  font-size:15px;
+  color:#4A2C34;
+  margin-bottom:16px;
+  line-height:1.55;
+}
 .quiz-btn{display:block;width:100%;padding:13px 14px;margin-bottom:10px;background:#FFFCF9;border:1px solid rgba(212,165,116,0.7);color:#4A2C34;font-family:'Playfair Display',serif;font-size:15px;font-weight:500;border-radius:8px;cursor:pointer;text-align:left;transition:all 0.25s ease;touch-action:manipulation}
 .quiz-btn:active{transform:scale(0.985)}
 .quiz-btn.correct{background:linear-gradient(135deg,#B76E79,#8B3A4A);color:#FFFCF9;border-color:#8B3A4A}
 .quiz-btn.wrong{background:#FBE3E9;color:#8B3A4A;border-color:#B76E79}
 #feedback{font-family:'Playfair Display',serif;font-style:italic;font-size:14px;color:#4A2C34;margin-top:12px;min-height:22px;line-height:1.5}
+.quiz-tap-hint{
+  font-family:'Cormorant Garamond',serif;
+  font-size:10px;
+  letter-spacing:2px;
+  color:#B76E79;
+  text-transform:uppercase;
+  font-weight:600;
+  margin-top:10px;
+  opacity:0.85;
+}
 
 #continueBtn{display:none;margin:20px auto 0;padding:13px 32px;background:linear-gradient(135deg,#B76E79,#8B3A4A);color:#FFFCF9;border:none;border-radius:30px;font-family:'Playfair Display',serif;font-size:14px;font-weight:600;letter-spacing:0.5px;cursor:pointer;box-shadow:0 6px 16px rgba(139,58,74,0.3);touch-action:manipulation}
 #continueBtn.show{display:block}
@@ -176,14 +250,20 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 
         <div class="divider"><span>✦</span></div>
 
+        <!-- Highlighted quiz section with hint arrow -->
+        <div class="quiz-hint-arrow">▼</div>
+        <div class="quiz-unlock-banner">Answer below to unlock the date & venue</div>
+
         <div class="quiz">
-          <div class="quiz-head">🔒 A tiny friendship check before you unlock</div>
+          <div class="quiz-head">🔒 A tiny friendship check</div>
+          <div class="quiz-subhead">Tap an answer to continue</div>
           <div class="quiz-q">What's the one thing a bride's best friend never forgets to bring?</div>
           <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">The perfect outfit ✨</button>
           <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">Tissues for happy tears 🥲</button>
           <button class="quiz-btn" data-correct="false" onclick="checkAnswer(this,false)">Snacks for the bride 🍫</button>
           <button class="quiz-btn" data-correct="true" onclick="checkAnswer(this,true)">All of the above (and backup lipstick) 💄</button>
           <div id="feedback"></div>
+          <div class="quiz-tap-hint">Tap an answer above</div>
           <button id="continueBtn" onclick="goToPage2()">See the Celebrations →</button>
         </div>
 
@@ -264,7 +344,6 @@ function openPurse(e) {
   }, 3400);
 }
 
-// Attach multiple listeners as backup — belt & suspenders
 document.addEventListener('DOMContentLoaded', function() {
   var purse = document.getElementById('purse');
   if (!purse) return;
@@ -283,12 +362,14 @@ function checkAnswer(btn, isCorrect) {
   });
   var feedback = document.getElementById('feedback');
   var continueBtn = document.getElementById('continueBtn');
+  var hint = document.querySelector('.quiz-tap-hint');
 
   if (isCorrect) {
     btn.classList.add('correct');
     feedback.innerHTML = "Yes! You know me too well. 🥲🤍<br>Come see the details, my love.";
     feedback.style.color = "#8B3A4A";
     continueBtn.classList.add('show');
+    if (hint) hint.style.display = 'none';
   } else {
     btn.classList.add('wrong');
     feedback.innerHTML = "Close! But think about what happens when I see you at the wedding... 🥲 Try again, my girl.";
@@ -337,7 +418,7 @@ try {
   setInterval(updateCountdown, 1000);
 } catch(e) {}
 
-// ==== SCRATCH ====
+// ==== SCRATCH (kiss) ====
 try {
   var canvas = document.getElementById('scratchPad');
   var ctx = canvas.getContext('2d');

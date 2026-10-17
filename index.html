@@ -70,8 +70,20 @@ body{font-family:'Playfair Display',serif;background:#111;overflow:hidden;-webki
 .page{min-height:100%;width:100%;padding:16px}
 #page2{display:none}
 
-.card{position:relative;background:radial-gradient(circle at 30% 15%, rgba(255,255,255,0.95) 0%, transparent 55%),linear-gradient(180deg,#FFFCF9 0%,#FDF2F4 100%);border-radius:18px;padding:38px 22px 60px;text-align:center;min-height:100%;box-shadow:0 30px 70px rgba(139,58,74,0.25),0 12px 30px rgba(139,58,74,0.15),0 4px 10px rgba(139,58,74,0.1),inset 0 2px 0 rgba(255,255,255,1);animation:cardEntry 1.4s cubic-bezier(0.4,0,0.2,1) 2.2s both}
+.card{position:relative;background:radial-gradient(circle at 30% 15%, rgba(255,255,255,0.95) 0%, transparent 55%),linear-gradient(180deg,#FFFCF9 0%,#FDF2F4 100%);border-radius:18px;padding:38px 22px 60px;text-align:center;min-height:100%;box-shadow:0 30px 70px rgba(139,58,74,0.25),0 12px 30px rgba(139,58,74,0.15),0 4px 10px rgba(139,58,74,0.1),inset 0 2px 0 rgba(255,255,255,1)}
+
+/* Page 1 animates in after purse opens */
+#page1 .card{animation:cardEntry 1.4s cubic-bezier(0.4,0,0.2,1) 2.2s both}
 @keyframes cardEntry{0%{opacity:0;transform:translateY(80px) scale(0.9)}100%{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Smooth crossfade for page transitions */
+#page1, #page2 {
+  transition: opacity 0.45s ease-in-out;
+}
+#page1.fade-out { opacity: 0; pointer-events: none; }
+#page2.fade-in { opacity: 1; }
+#page2 { opacity: 0; }
+
 .card:before{content:'';position:absolute;inset:0;border-radius:18px;pointer-events:none;background-image:radial-gradient(circle at 15% 25%, rgba(183,110,121,0.04) 0, transparent 1.5px),radial-gradient(circle at 85% 60%, rgba(212,165,116,0.05) 0, transparent 1.5px),radial-gradient(circle at 45% 85%, rgba(183,110,121,0.03) 0, transparent 1.5px);background-size:24px 24px,32px 32px,20px 20px}
 
 .border{position:absolute;top:14px;bottom:14px;left:14px;right:14px;border-radius:12px;pointer-events:none;padding:2px;background:linear-gradient(120deg,#D4A574 0%,#FFF2C9 15%,#F5E0B0 25%,#D4A574 40%,#B76E79 55%,#D4A574 70%,#FFF2C9 85%,#D4A574 100%);background-size:300% 300%;animation:borderShimmer 5s ease-in-out infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;filter:drop-shadow(0 0 4px rgba(212,165,116,0.6))}
@@ -187,6 +199,7 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 
 <div id="frame">
   <button id="muteBtn" onclick="toggleSound(event)" title="Toggle sound">🔊</button>
+
   <div id="purse" onclick="openPurse(event)">
     <div class="petals">
       <div class="petal" style="left:5%;animation-duration:7s;animation-delay:0s"></div>
@@ -320,9 +333,6 @@ canvas{position:absolute;top:0;left:0;z-index:2;touch-action:none;cursor:crossha
 </div>
 
 <script>
-/* ============================================================
-   AUDIO ENGINE — Canon in D (anti-distortion version)
-   ============================================================ */
 var audioCtx = null;
 var soundOn = true;
 var musicOn = false;
@@ -340,30 +350,23 @@ function initAudio() {
   if (audioCtx) return;
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // Lowpass filters — kills high-frequency distortion
     musicLowpass = audioCtx.createBiquadFilter();
     musicLowpass.type = 'lowpass';
-    musicLowpass.frequency.value = 2600;  // lowered from 3200
+    musicLowpass.frequency.value = 2600;
     musicLowpass.Q.value = 0.7;
-
     sfxLowpass = audioCtx.createBiquadFilter();
     sfxLowpass.type = 'lowpass';
     sfxLowpass.frequency.value = 3500;
     sfxLowpass.Q.value = 0.7;
-
-    // HARD limiter — aggressive clamping
     limiter = audioCtx.createDynamicsCompressor();
-    limiter.threshold.value = -28;   // much lower threshold
-    limiter.knee.value = 1;          // hard knee
-    limiter.ratio.value = 20;        // brick wall
+    limiter.threshold.value = -26;
+    limiter.knee.value = 2;
+    limiter.ratio.value = 20;
     limiter.attack.value = 0.001;
-    limiter.release.value = 0.08;
+    limiter.release.value = 0.1;
     limiter.connect(audioCtx.destination);
-
     musicLowpass.connect(limiter);
     sfxLowpass.connect(limiter);
-
     var length = Math.floor(audioCtx.sampleRate * 1.6);
     var impulse = audioCtx.createBuffer(2, length, audioCtx.sampleRate);
     for (var ch = 0; ch < 2; ch++) {
@@ -375,20 +378,16 @@ function initAudio() {
     reverbNode = audioCtx.createConvolver();
     reverbNode.buffer = impulse;
     reverbGainNode = audioCtx.createGain();
-    reverbGainNode.gain.value = 0.06;  // lowered from 0.08
+    reverbGainNode.gain.value = 0.08;
     reverbNode.connect(reverbGainNode);
     reverbGainNode.connect(musicLowpass);
-
-    // Music bus — MASTER VOLUME HALVED
     musicBus = audioCtx.createGain();
-    musicBus.gain.value = 0.075;   // lowered from 0.14 (46% quieter)
+    musicBus.gain.value = 0.075;
     musicBus.connect(musicLowpass);
     musicBus.connect(reverbNode);
-
     sfxBus = audioCtx.createGain();
     sfxBus.gain.value = 1;
     sfxBus.connect(sfxLowpass);
-
     var nlen = Math.floor(audioCtx.sampleRate * 0.6);
     noiseBuffer = audioCtx.createBuffer(1, nlen, audioCtx.sampleRate);
     var nd = noiseBuffer.getChannelData(0);
@@ -480,51 +479,35 @@ function playSoftPad(freq, t0, volume, duration) {
 function startMusic() {
   if (musicOn || !audioCtx || !soundOn) return;
   musicOn = true;
-
   var beatDur = 0.8;
   var barDur = beatDur * 4;
   var loopDur = barDur * 8;
-
   function scheduleLoop() {
     if (!musicOn || !audioCtx) return;
     try {
       var t0 = audioCtx.currentTime + 0.15;
-
       for (var i = 0; i < CANON_CHORDS.length; i++) {
         var ct = t0 + i * barDur;
         var ch = CANON_CHORDS[i];
-
-        // Reduced pad volumes (were 0.032/0.020, now 0.018/0.012)
         playSoftPad(ch.bass, ct, 0.018, barDur);
         playSoftPad(ch.pad1, ct, 0.012, barDur);
         playSoftPad(ch.pad2, ct, 0.012, barDur);
-
-        // Reduced arp volumes (were 0.024, now 0.014)
         for (var k = 0; k < ch.arp.length; k++) {
           var at = ct + k * (beatDur * 0.5);
           playPluck(ch.arp[k], at, 0.014, 2.0);
         }
       }
-
-      // Reduced melody volume (was 0.018, now 0.010)
       for (var m = 0; m < CANON_MELODY.length; m++) {
         var mel = CANON_MELODY[m];
         var mt = t0 + mel.beat * beatDur;
         playPluck(mel.note, mt, 0.010, 2.5);
       }
-
       musicTimer = setTimeout(scheduleLoop, (loopDur - 2.0) * 1000);
     } catch (e) {
       musicTimer = setTimeout(scheduleLoop, 20000);
     }
   }
-
   scheduleLoop();
-}
-
-function stopMusic() {
-  musicOn = false;
-  if (musicTimer) { clearTimeout(musicTimer); musicTimer = null; }
 }
 
 function playTap() {
@@ -536,7 +519,7 @@ function playTap() {
   osc.frequency.exponentialRampToValueAtTime(50, t0 + 0.14);
   var amp = audioCtx.createGain();
   amp.gain.setValueAtTime(0, t0);
-  amp.gain.linearRampToValueAtTime(0.02, t0 + 0.012);  // lowered from 0.03
+  amp.gain.linearRampToValueAtTime(0.02, t0 + 0.012);
   amp.gain.exponentialRampToValueAtTime(0.001, t0 + 0.22);
   osc.connect(amp);
   amp.connect(sfxBus);
@@ -547,7 +530,7 @@ function playTap() {
 function playNoise(duration, volume, delay, freq) {
   if (!soundOn || !audioCtx || !noiseBuffer || !sfxBus) return;
   delay = delay || 0;
-  volume = volume || 0.01;  // lowered from 0.02
+  volume = volume || 0.01;
   freq = freq || 1600;
   var t0 = audioCtx.currentTime + delay;
   var src = audioCtx.createBufferSource();
@@ -573,7 +556,6 @@ function openPurse(e) {
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   if (soundOn && !musicOn) startMusic();
   if (soundOn) playTap();
-
   var purse = document.getElementById('purse');
   if (!purse || purse.classList.contains('open')) return;
   purse.classList.add('hide');
@@ -592,6 +574,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function checkAnswer(btn, isCorrect) {
+  initAudio();
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   document.querySelectorAll('.quiz-btn').forEach(function(b) {
     b.classList.remove('correct', 'wrong');
@@ -613,22 +596,52 @@ function checkAnswer(btn, isCorrect) {
   }
 }
 
+/* ============================================================
+   CROSS-DISSOLVE PAGE TRANSITIONS
+   Smooth fade-out of page 1 → fade-in of page 2 (0.45s each)
+   ============================================================ */
 function goToPage2() {
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+  var page1 = document.getElementById('page1');
   var page2 = document.getElementById('page2');
-  page2.style.display = 'block';
+  var container = document.getElementById('pages');
+
+  // Fade out page 1
+  page1.classList.add('fade-out');
+
+  // After fade-out starts, show page 2 and fade it in
   setTimeout(function() {
-    try { page2.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-    catch (e) { document.getElementById('pages').scrollTop = page2.offsetTop; }
-  }, 50);
+    page1.style.display = 'none';
+    page1.classList.remove('fade-out');
+    page2.style.display = 'block';
+    page2.style.opacity = '0';
+    container.scrollTop = 0;
+
+    // Trigger the fade-in on the next frame
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        page2.style.opacity = '1';
+      });
+    });
+  }, 450);
 }
 
 function goToPage1() {
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
   if (soundOn) playTap();
   var page1 = document.getElementById('page1');
-  try { page1.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-  catch (e) { document.getElementById('pages').scrollTop = 0; }
+  var page2 = document.getElementById('page2');
+  var container = document.getElementById('pages');
+
+  // Fade out page 2
+  page2.style.opacity = '0';
+
+  setTimeout(function() {
+    page2.style.display = 'none';
+    page1.style.display = 'block';
+    page1.style.opacity = '1';
+    container.scrollTop = 0;
+  }, 450);
 }
 
 try {
@@ -655,6 +668,7 @@ try {
   var hidden = document.getElementById('hiddenElements');
   canvas.width = 250;
   canvas.height = 180;
+
   function drawKiss() {
     var bg = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
     bg.addColorStop(0, '#FDECF0');
@@ -709,14 +723,17 @@ try {
     ctx.fill();
   }
   drawKiss();
+
   ctx.globalCompositeOperation = 'destination-out';
   ctx.lineWidth = 40;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
+
   var drawing = false;
   var tracker = 0;
   var revealed = false;
   var scratchSoundPlayed = false;
+
   function getPos(e) {
     var rect = canvas.getBoundingClientRect();
     var x = e.touches ? e.touches[0].clientX : e.clientX;
@@ -724,10 +741,11 @@ try {
     return { x: x - rect.left, y: y - rect.top };
   }
   function start(e) {
+    initAudio();
     if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
     drawing = true;
     if (!scratchSoundPlayed && soundOn) {
-      playNoise(0.25, 0.008, 0, 900);  // lowered from 0.015
+      playNoise(0.25, 0.008, 0, 900);
       scratchSoundPlayed = true;
     }
     scratch(e);
@@ -749,6 +767,7 @@ try {
       }
     }
   }
+
   canvas.addEventListener('mousedown', start);
   canvas.addEventListener('mousemove', scratch);
   canvas.addEventListener('mouseup', end);
